@@ -115,7 +115,7 @@ int main()
 		return -1;
 	}
 
-	if (loadDemoData(vg, &data) == -1)
+	if (loadDemoData(vg, &data, ".") == -1)
 		return -1;
 
 	glfwSwapInterval(0);

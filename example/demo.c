@@ -876,11 +876,11 @@ int loadDemoData(NVGcontext* vg, DemoData* data, const char* dir)
 
 	if (vg == NULL)
 		return -1;
-  
+
   char file[256];
 
 	for (i = 0; i < 12; i++) {
-		
+
 		snprintf(file, sizeof(file), "%s/images/image%d.jpg", dir, i+1);
 		data->images[i] = nvgCreateImage(vg, file, 0);
 		if (data->images[i] == 0) {
@@ -888,7 +888,7 @@ int loadDemoData(NVGcontext* vg, DemoData* data, const char* dir)
 			return -1;
 		}
 	}
-  
+
   snprintf(file, sizeof(file), "%s/entypo.ttf", dir);
 
 	data->fontIcons = nvgCreateFont(vg, "icons", file);
@@ -896,17 +896,17 @@ int loadDemoData(NVGcontext* vg, DemoData* data, const char* dir)
 		printf("Could not add font icons.\n");
 		return -1;
 	}
-  
+
   snprintf(file, sizeof(file), "%s/Roboto-Regular.ttf", dir);
-  
+
 	data->fontNormal = nvgCreateFont(vg, "sans", file);
 	if (data->fontNormal == -1) {
 		printf("Could not add font italic.\n");
 		return -1;
 	}
-  
+
   snprintf(file, sizeof(file), "%s/Roboto-Bold.ttf", dir);
-  
+
 	data->fontBold = nvgCreateFont(vg, "sans-bold", file);
 	if (data->fontBold == -1) {
 		printf("Could not add font bold.\n");
@@ -1173,7 +1173,7 @@ void drawBezierCurve(NVGcontext* vg, float x0, float y0, float radius, float t){
 	nvgLineStyle(vg, NVG_LINE_DASHED);
 	nvgStrokeColor(vg, nvgRGBA(255, 195, 0,255));
 	nvgStroke(vg);
-	
+
 	nvgBeginPath(vg);
 	nvgCircle(vg,x0,y0,5.0f);
 	nvgCircle(vg,cx0,cy0,5.0f);
@@ -1184,7 +1184,6 @@ void drawBezierCurve(NVGcontext* vg, float x0, float y0, float radius, float t){
 	nvgFill(vg);
 }
 
->>>>>>> 20d3886 (fixed butt behavior)
 void renderDemo(NVGcontext* vg, float mx, float my, float width, float height,
 				float t, int blowup, DemoData* data)
 {

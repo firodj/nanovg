@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include "nanovg.h"
+#include <GLFW/glfw3.h>
 
 #ifdef _MSC_VER
 #define snprintf _snprintf

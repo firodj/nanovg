@@ -333,7 +333,7 @@ NVGcontext* nvgCreateInternal(NVGparams* params)
 	ctx->ncommands = 0;
 	ctx->ccommands = NVG_INIT_COMMANDS_SIZE;
     ctx->numCached = 0;
-    
+
 	ctx->cache = nvg__allocPathCache();
 	if (ctx->cache == NULL) goto error;
 
@@ -362,9 +362,9 @@ NVGcontext* nvgCreateInternal(NVGparams* params)
 	if (ctx->fontImages[0] == 0) goto error;
 	ctx->fontImageIdx = 0;
     ctx->scissor = {0.0f, 0.0f, -1.0f, -1.0f};
-  
+
     ctx->strokeCache = new StrokeCache();
-    
+
 	return ctx;
 
 error:
@@ -408,7 +408,7 @@ void nvgDeleteInternal(NVGcontext* ctx)
 
 	if (ctx->params.renderDelete != NULL)
 		ctx->params.renderDelete(ctx->params.userPtr);
-  
+
     free(ctx);
 }
 
@@ -960,7 +960,7 @@ NVGpaint nvgDoubleStroke(NVGcontext* ctx, NVGcolor icol, NVGcolor ocol)
     p.innerColor = icol;
     p.outerColor = ocol;
     p.feather = ctx->devicePxRatio < 2.0f ? 0.8 : 0.6;
-    
+
     NVGstate* state = nvg__getState(ctx);
     state->lineStyle = NVG_DOUBLE_STROKE;
     return p;
@@ -2091,7 +2091,7 @@ static int nvg__expandStroke(NVGcontext* ctx, float w, float fringe, int lineCap
 				p1 = &pts[1];
 			}
 		}
-        
+
 		if (loop == 0) {
 			// Add cap
 			dx = p1->x - p0->x;
@@ -2106,7 +2106,7 @@ static int nvg__expandStroke(NVGcontext* ctx, float w, float fringe, int lineCap
 			else if (lineCap == NVG_ROUND)
 				dst = nvg__roundCapStart(dst, p0, dx, dy, w, ncap, aa, u0, u1, t, dir);
 		}
-        
+
 		for (j = s; j < e; ++j) {
             dx = p1->x - p0->x;
             dy = p1->y - p0->y;
@@ -2119,7 +2119,7 @@ static int nvg__expandStroke(NVGcontext* ctx, float w, float fringe, int lineCap
                 p0 = p1++;
                 continue;
             }
-        
+
             if(lineStyle > 1){
                 dst = nvg_insertSpacer(dst, p0, dx, dy, w, u0, u1, t);
                 t+=dir*dt*invStrokeWidth;
@@ -2137,7 +2137,7 @@ static int nvg__expandStroke(NVGcontext* ctx, float w, float fringe, int lineCap
 			}
 			p0 = p1++;
 		}
-        
+
 		if (loop) {
 			// Loop it
 			nvg__vset(dst, verts[0].x, verts[0].y, u0, 1, -1, t); dst++;
@@ -2161,12 +2161,12 @@ static int nvg__expandStroke(NVGcontext* ctx, float w, float fringe, int lineCap
 			else if (lineCap == NVG_ROUND)
 				dst = nvg__roundCapEnd(dst, p1, dx, dy, w, ncap, aa, u0, u1, t, dir);
 		}
-        
+
         ctx->currentLineLength = fabsf(t) * 0.5;
 		path->nstroke = (int)(dst - verts);
 		verts = dst;
 	}
-    
+
 	return 1;
 }
 
@@ -2551,51 +2551,51 @@ int32_t nvgSavePath(NVGcontext* ctx, uint32_t pathId)
     if(ctx->ncommands < 3 || ctx->cache->npaths > 3) {
       return -1;
     }
-    
+
     NVGstate* state = nvg__getState(ctx);
     auto cacheEntry = StrokeCacheLine();
-    
+
     float invxform[6];
     nvgTransformInverse(invxform, state->xform);
-        
+
     cacheEntry.lineLength = ctx->currentLineLength;
-    
+
     for (int i = 0; i < ctx->cache->npaths; i++) {
-      
+
       auto& p = ctx->cache->paths[i];
       if(p.nfill > (1<<13) || p.nstroke > (1<<13)) return -1;
-        
+
       NVGpath pathCopy = p;
-        
+
       // Duplicate path data
       pathCopy.fill = (NVGvertex*) malloc( p.nfill * sizeof(NVGvertex) );
       memcpy(pathCopy.fill, p.fill, p.nfill * sizeof(NVGvertex));
-    
+
       pathCopy.stroke = (NVGvertex*) malloc( p.nstroke * sizeof(NVGvertex) );
       memcpy(pathCopy.stroke, p.stroke, p.nstroke * sizeof(NVGvertex));
-    
+
       for(int j = 0; j < p.nfill; j++)
       {
           nvgTransformPoint(&pathCopy.fill[j].x, &pathCopy.fill[j].y, invxform, pathCopy.fill[j].x, pathCopy.fill[j].y);
           //nvgTransformPoint(&p.fill[i].u, &p.fill[i].v, invxform, p.fill[i].u, p.fill[i].v);
           //nvgTransformPoint(&p.fill[i].s, &p.fill[i].t, invxform, p.fill[i].s, p.fill[i].t);
       }
-        
+
       for(int j = 0; j < p.nstroke; j++)
       {
           nvgTransformPoint(&pathCopy.stroke[j].x, &pathCopy.stroke[j].y, invxform, pathCopy.stroke[j].x, pathCopy.stroke[j].y);
           //nvgTransformPoint(&p.stroke[i].u, &p.stroke[i].v, invxform, p.stroke[i].u, p.stroke[i].v);
           //nvgTransformPoint(&p.stroke[i].s, &p.stroke[i].t, invxform, p.stroke[i].s, p.stroke[i].t);
       }
-        
+
       cacheEntry.paths.push_back(pathCopy);
     }
-    
+
     if(pathId == -1)
     {
         pathId = ctx->numCached++;
     }
-    
+
     CACHE[pathId] = cacheEntry;
     return pathId;
 }
@@ -2608,44 +2608,44 @@ void nvgDeletePath(NVGcontext* ctx, uint32_t pathId)
         free(path.stroke);
         free(path.fill);
     }
-    
+
     CACHE.erase(pathId);
 }
 
 int nvgLoadPath(NVGcontext* ctx, uint32_t pathId)
 {
-    if(CACHE.contains(pathId))
+    if(CACHE.find(pathId) != CACHE.end())
     {
         NVGstate* state = nvg__getState(ctx);
         nvgBeginPath(ctx);
-        
+
         auto& cacheEntry = CACHE[pathId];
         auto numPaths = cacheEntry.paths.size();
-        
+
         memcpy(ctx->userCachedPaths, cacheEntry.paths.data(), numPaths * sizeof(NVGpath));
         ctx->cache->cachedPaths = ctx->userCachedPaths;
         ctx->cache->npaths = (int)numPaths;
         ctx->currentLineLength = cacheEntry.lineLength;
-        
+
         for (int i = 0; i < numPaths; i++) {
-        
+
           auto& p = ctx->cache->cachedPaths[i];
           auto& cachedPath = cacheEntry.paths[i];
-          
+
           // Duplicate path data
           p.fill = ctx->cachedVertexBuffer;
           memcpy(p.fill, cachedPath.fill, cachedPath.nfill * sizeof(NVGvertex));
-      
+
           p.stroke = ctx->cachedVertexBuffer + (1<<13);
           memcpy(p.stroke, cachedPath.stroke, cachedPath.nstroke * sizeof(NVGvertex));
-        
+
           for(int j = 0; j < p.nfill; j++)
           {
               nvgTransformPoint(&p.fill[j].x, &p.fill[j].y, state->xform, p.fill[j].x, p.fill[j].y);
               //nvgTransformPoint(&p.fill[i].u, &p.fill[i].v, state->xform, p.fill[i].u, p.fill[i].v);
               //nvgTransformPoint(&p.fill[i].s, &p.fill[i].t, state->xform, p.fill[i].s, p.fill[i].t);
           }
-          
+
           for(int j = 0; j < p.nstroke; j++)
           {
               nvgTransformPoint(&p.stroke[j].x, &p.stroke[j].y, state->xform, p.stroke[j].x, p.stroke[j].y);
@@ -2653,7 +2653,7 @@ int nvgLoadPath(NVGcontext* ctx, uint32_t pathId)
               //nvgTransformPoint(&p.stroke[i].s, &p.stroke[i].t, state->xform, p.stroke[i].s, p.stroke[i].t);
           }
         }
-        
+
         ctx->isCached = true;
         return 1;
     }
@@ -2667,12 +2667,12 @@ void nvgFill(NVGcontext* ctx)
 	const NVGpath* path;
 	NVGpaint fillPaint = state->fill;
 	int i;
-    
+
     if(ctx->isCached)
     {
         ctx->params.renderFill(ctx->params.userPtr, &fillPaint, state->compositeOperation, &state->scissor, ctx->fringeWidth,
                                ctx->cache->bounds, ctx->cache->cachedPaths, ctx->cache->npaths);
-            
+
         // Count triangles
         for (i = 0; i < ctx->cache->npaths; i++) {
             path = &ctx->cache->paths[i];
@@ -2695,7 +2695,7 @@ void nvgFill(NVGcontext* ctx)
 
 	ctx->params.renderFill(ctx->params.userPtr, &fillPaint, state->compositeOperation, &state->scissor, ctx->fringeWidth,
 						   ctx->cache->bounds, ctx->cache->paths, ctx->cache->npaths);
-    
+
 	// Count triangles
 	for (i = 0; i < ctx->cache->npaths; i++) {
 		path = &ctx->cache->paths[i];
@@ -2704,7 +2704,7 @@ void nvgFill(NVGcontext* ctx)
 		ctx->drawCallCount += 2;
 	}
 }
-  
+
 void nvgStroke(NVGcontext* ctx)
 {
 	NVGstate* state = nvg__getState(ctx);
@@ -2713,7 +2713,7 @@ void nvgStroke(NVGcontext* ctx)
 	NVGpaint strokePaint = state->stroke;
 	const NVGpath* path;
 	int i;
-    
+
     if (strokeWidth < ctx->fringeWidth) {
         // If the stroke width is less than pixel size, use alpha to emulate coverage.
         // Since coverage is area, scale by alpha*alpha.
@@ -2722,7 +2722,7 @@ void nvgStroke(NVGcontext* ctx)
         strokePaint.outerColor.a *= alpha*alpha;
         strokeWidth = ctx->fringeWidth;
     }
-    
+
     // Apply global alpha
     strokePaint.innerColor.a *= state->alpha;
     strokePaint.outerColor.a *= state->alpha;
@@ -2731,16 +2731,16 @@ void nvgStroke(NVGcontext* ctx)
     {
         ctx->params.renderStroke(ctx->params.userPtr, &strokePaint, state->compositeOperation, &state->scissor, ctx->fringeWidth,
                                  strokeWidth, state->lineStyle, ctx->currentLineLength, ctx->cache->cachedPaths, ctx->cache->npaths);
-        
+
         for (i = 0; i < ctx->cache->npaths; i++) {
             path = &ctx->cache->paths[i];
             ctx->strokeTriCount += path->nstroke-2;
             ctx->drawCallCount++;
         }
-        
+
         return;
     }
-    
+
 	nvg__flattenPaths(ctx);
 
 	if (ctx->params.edgeAntiAlias && state->shapeAntiAlias && (state->lineStyle <= 1 || state->lineStyle == 5))
@@ -2762,15 +2762,15 @@ void nvgStroke(NVGcontext* ctx)
 void nvgDrawRoundedRect(NVGcontext* ctx, float x, float y, float w, float h, NVGcolor icol, NVGcolor ocol, float radius)
 {
     nvg__clearPathCache(ctx);
-    
+
     NVGpaint p;
     memset(&p, 0, sizeof(p));
-    
+
     float edgeX = x - 0.5f;
     float edgeY = y - 0.5f;
     float edgeRight = x + w + 1.0f;
     float edgeBottom = y + h + 1.0f;
-    
+
     nvg__addPath(ctx);
     NVGpath* path = nvg__lastPath(ctx);
     nvg__addPoint(ctx, edgeX, edgeY, NVG_PT_CORNER);
@@ -2778,10 +2778,10 @@ void nvgDrawRoundedRect(NVGcontext* ctx, float x, float y, float w, float h, NVG
     nvg__addPoint(ctx, edgeRight, edgeBottom, NVG_PT_CORNER);
     nvg__addPoint(ctx, edgeRight, edgeY, NVG_PT_CORNER);
     path->closed = 1;
-    
+
     NVGstate* state = nvg__getState(ctx);
     NVGvertex vertices[4];
-    
+
     for(int i = 0; i < 4; i++)
     {
         nvgTransformPoint(&ctx->cache->points[i].x, &ctx->cache->points[i].y, state->xform, ctx->cache->points[i].x, ctx->cache->points[i].y);
@@ -2792,7 +2792,7 @@ void nvgDrawRoundedRect(NVGcontext* ctx, float x, float y, float w, float h, NVG
     ctx->cache->bounds[1] = vertices[0].y;
     ctx->cache->bounds[2] = vertices[2].x;
     ctx->cache->bounds[3] = vertices[2].y;
-    
+
     path->fill = vertices;
     path->nfill = 4;
 
@@ -2811,9 +2811,9 @@ void nvgDrawRoundedRect(NVGcontext* ctx, float x, float y, float w, float h, NVG
     p.outerColor = ocol;
     p.extent[0] = w * 0.5f;
     p.extent[1] = h * 0.5f;
-    
+
     nvgTransformMultiply(p.xform, state->xform);
-    
+
     ctx->params.renderFill(ctx->params.userPtr, &p, state->compositeOperation, &state->scissor, ctx->fringeWidth,
                            ctx->cache->bounds, path, 1);
 
@@ -3493,7 +3493,268 @@ void nvgTextMetrics(NVGcontext* ctx, float* ascender, float* descender, float* l
 	if (lineh != NULL)
 		*lineh *= invscale;
 }
-  
+
+char const* fillVertShader = R"(
+		#ifdef NANOVG_GL3
+			uniform vec2 viewSize;
+			in vec2 vertex;
+			in vec4 tcoord;
+			out vec2 ftcoord;
+			out vec2 fpos;
+			smooth out vec2 uv;
+		#else
+			uniform vec2 viewSize;
+			attribute vec2 vertex;
+			attribute vec4 tcoord;
+			varying vec2 ftcoord;
+			varying vec2 fpos;
+			varying vec2 uv;
+		#endif
+		void main(void) {
+			ftcoord = tcoord.xy;
+			uv = 0.5f * tcoord.zw;
+			fpos = vertex;
+			gl_Position = vec4(2.0f*vertex.x/viewSize.x - 1.0f, 1.0f - 2.0f*vertex.y/viewSize.y, 0.f, 1.f);
+		}
+	)";
+
+const char* fillFragShader = R"(
+	#ifdef GL_ES
+	#if defined(GL_FRAGMENT_PRECISION_HIGH)
+		precision highp float;
+	#else
+		precision mediump float;
+	#endif
+	#endif
+	#ifdef NANOVG_GL3
+	#ifdef USE_UNIFORMBUFFER
+		layout(std140) uniform frag {
+			mat3 scissorMat;
+			mat3 paintMat;
+			vec4 innerCol;
+			vec4 outerCol;
+			vec2 scissorExt;
+			vec2 scissorScale;
+			vec2 extent;
+			float radius;
+			float feather;
+			float strokeMult;
+			float strokeThr;
+			float patternSize;
+			int lineStyle;
+			int texType;
+			int type;
+			float scissorRadius;
+			float lineLength;
+			float offset;
+		};
+	#else // NANOVG_GL3 && !USE_UNIFORMBUFFER
+		uniform vec4 frag[UNIFORMARRAY_SIZE];
+	#endif
+		uniform sampler2D tex;
+		in vec2 ftcoord;
+		in vec2 fpos;
+		smooth in vec2 uv;
+		out vec4 outColor;
+	#else // !NANOVG_GL3
+		uniform vec4 frag[UNIFORMARRAY_SIZE];
+		uniform sampler2D tex;
+		varying vec2 ftcoord;
+		varying vec2 fpos;
+		varying vec2 uv;
+	#endif
+	#ifndef USE_UNIFORMBUFFER
+		#define scissorMat mat3(frag[0].xyz, frag[1].xyz, frag[2].xyz)
+		#define paintMat mat3(frag[3].xyz, frag[4].xyz, frag[5].xyz)
+		#define innerCol frag[6]
+		#define outerCol frag[7]
+		#define scissorExt frag[8].xy
+		#define scissorScale frag[8].zw
+		#define extent frag[9].xy
+		#define radius frag[9].z
+		#define feather frag[9].w
+		#define strokeMult frag[10].x
+		#define strokeThr frag[10].y
+		#define patternSize frag[10].z
+		#define lineStyle int(frag[10].w)
+		#define texType int(frag[11].x)
+		#define type int(frag[11].y)
+		#define scissorRadius frag[11].z
+		#define lineLength frag[11].w
+		#define offset frag[12].x
+	#endif
+
+	float sdroundrect(vec2 pt, vec2 ext, float rad) {
+		vec2 ext2 = ext - vec2(rad,rad);
+		vec2 d = abs(pt) - ext2;
+		return min(max(d.x,d.y),0.0f) + length(max(d,0.0f)) - rad;
+	}
+	// Scissoring
+	float scissorMask(vec2 p) {
+		vec2 sc = (abs((scissorMat * vec3(p,1.0f)).xy) - scissorExt);
+		sc = vec2(0.5f,0.5f) - sc * scissorScale;
+		return clamp(sc.x,0.0f,1.0f) * clamp(sc.y,0.0f,1.0f);
+	}
+	// Calculate scissor path with rounded corners
+	float roundedScissorMask(vec2 p, float rad) {
+		vec2 sc = (abs((scissorMat * vec3(p,1.0f)).xy));
+		float sc2 = sdroundrect(sc, scissorExt, rad);
+		return smoothstep(1.0, 0.0, sc2);
+	}
+	float glow(vec2 uv){
+		return smoothstep(0.0f, 1.0f, 1.0f - 2.0f * abs(uv.x));
+	}
+	float circleDist(vec2 p, vec2 center, float d) {
+			return distance(center, p) - d;
+	}
+	float dashed(vec2 uv){
+		vec2 UV = vec2(uv.x, uv.y - offset);
+		float fy = fract(UV.y / radius);
+		float w = step(fy, (radius / 8.0f));
+		fy *= (radius * 0.75);
+		if(fy >= (radius / 2.666f)) {
+			fy -= (radius / 2.666f);
+		} else if(fy <= (radius / 8.0f)) {
+			fy -= (radius / 8.0f);
+		} else {
+			fy = 0.0f;
+		}
+		w *= smoothstep(0.0f, 1.0f, (radius * 1.5f) * (0.25f - (UV.x * UV.x  + fy * fy)));
+		return w;
+	}
+	float dotted(vec2 uv){
+		float fy = 4.0f * fract(uv.y / (4.0)) - 0.5f;
+		return smoothstep(0.0f, 1.0f, 6.0f * (0.25f - (uv.x * uv.x  + fy * fy)));
+	}
+	#ifdef EDGE_AA
+	// Stroke - from [0..1] to clipped pyramid, where the slope is 1px.
+	float strokeMask() {
+		float mask = min(1.0f, (1.0f-abs(ftcoord.x*2.0f-1.0f))*strokeMult) * min(1.0f, ftcoord.y);
+		if(lineStyle == 2) mask*=dashed(uv);
+		if(lineStyle == 3) mask*=dotted(uv);
+		if(lineStyle == 4) mask*=glow(uv);
+		return mask;
+	}
+	#else
+	float strokeMask() {
+		float mask = 1.0f;
+		if(lineStyle == 2) mask*=dashed(uv);
+		if(lineStyle == 3) mask*=dotted(uv);
+		if(lineStyle == 4) mask*=glow(uv);
+		return mask;
+	}
+	#endif
+
+	void main(void) {
+		vec4 result;
+		float scissor = scissorRadius == 0.0f ? scissorMask(fpos) : roundedScissorMask(fpos, scissorRadius);
+		if(scissor == 0.0f) {
+	#ifdef NANOVG_GL3
+			outColor = vec4(0, 0, 0, 0);
+	#else
+			gl_FragColor = vec4(0, 0, 0, 0);
+			return;
+	#endif
+		}
+		if (type == 5) { //rounded rect fill+stroke
+			// Calculate distance to edge.
+			vec2 pt = (paintMat * vec3(fpos,1.0f)).xy;
+			float outerD = clamp((sdroundrect(pt, extent + vec2(0.5f), radius) + 1.5f * 0.5f) / 1.5f, 0.0f, 1.0f);
+			float innerD = clamp((sdroundrect(pt, extent - vec2(0.5f), radius - 1.0f) + 1.5f * 0.5f) / 1.5f, 0.0f, 1.0f);
+			vec2 dx = dFdx(pt);
+			vec2 dy = dFdy(pt);
+			float alias = 0.5f * length(max(abs(dx), abs(dy)));
+			float outerRoundedRectAlpha = 1.0f - (smoothstep(0.0f, alias, outerD) * smoothstep(1.0f - alias, 1.0f, outerD));
+			float innerRoundedRectAlpha = 1.0f - (smoothstep(0.0f, alias, innerD) * smoothstep(1.0f - alias, 1.0f, innerD));
+			result = vec4(mix(outerCol.rgba, innerCol.rgba, innerRoundedRectAlpha).rgba * outerRoundedRectAlpha) * scissor;
+	#ifdef NANOVG_GL3
+			outColor = result;
+	#else
+			gl_FragColor = result;
+	#endif
+			return;
+		}
+		float strokeAlpha = strokeMask();
+	#ifdef EDGE_AA
+		if (strokeAlpha < strokeThr) discard;
+	#else
+		if (lineStyle > 1 && strokeAlpha < strokeThr) discard;
+	#endif
+		if (type == 6) { // fill color
+			result = innerCol * strokeAlpha * scissor;
+		}
+		if (type == 7) { // double stroke with rounded caps, for  plugdata connections
+			float colorMix = (1.0 - 2.15 * abs(uv.x));
+			float smoothStart = 1.0f - feather;
+			float smoothEnd = feather;
+			vec4 icol = innerCol;
+			if (uv.y < 0.0) {
+				float dist = distance(2.0 * uv, vec2(0.0, 0.0));
+				strokeAlpha *= 1.0 - step(1.0, dist);
+				float innerCap = 1.0 - smoothstep(smoothStart, smoothEnd, dist);
+				icol = mix(outerCol, icol, innerCap);
+			}
+			if (uv.y > lineLength) {
+				vec2 capStart = vec2(uv.x, (lineLength - uv.y));
+				float dist = distance(2.0 * capStart, vec2(0.0, 0.0));
+				strokeAlpha *= 1.0 - step(1.0, dist);
+				float innerCap = 1.0 - smoothstep(smoothStart, smoothEnd, dist);
+				icol = mix(outerCol, icol, innerCap);
+			}
+			result = mix(outerCol, icol, smoothstep(smoothStart, smoothEnd, clamp(colorMix, 0.0, 1.0))) * strokeAlpha * scissor;
+			}
+		if (type == 0) { // Gradient
+			// Calculate gradient color using box gradient
+			vec2 pt = (paintMat * vec3(fpos,1.0f)).xy;
+			float d = clamp((sdroundrect(pt, extent, radius) + feather*0.5f) / feather, 0.0f, 1.0f);
+			vec4 color = mix(innerCol,outerCol,d);
+			// Combine alpha
+			color *= strokeAlpha * scissor;
+			result = color;
+		} else if (type == 1) { // Image
+			// Calculate color fron texture
+			vec2 pt = (paintMat * vec3(fpos,1.0f)).xy / extent;
+	#ifdef NANOVG_GL3
+			vec4 color = texture(tex, pt);
+	#else
+			vec4 color = texture2D(tex, pt);
+	#endif
+			if (texType == 1) color = vec4(color.xyz*color.w,color.w);
+			if (texType == 2) color = vec4(color.x);
+			// Apply color tint and alpha.
+			color *= innerCol;
+			// Combine alpha
+			color *= strokeAlpha * scissor;
+			result = color;
+		} else if (type == 2) { // Stencil fill
+			result = vec4(1.0f,1.0f,1.0f,1.0f);
+		} else if (type == 3) { // Textured tris
+	#ifdef NANOVG_GL3
+			vec4 color = texture(tex, ftcoord);
+	#else
+			vec4 color = texture2D(tex, ftcoord);
+	#endif
+			if (texType == 1) color = vec4(color.xyz*color.w,color.w);
+			if (texType == 2) color = vec4(color.x);
+			if (color.x < 0.02f) discard;
+			color *= scissor;
+			result = color * innerCol;
+		} else if (type == 4) { // Dot pattern for plugdata
+			vec2 pt = (paintMat * vec3(fpos, 1.0f)).xy - (0.5f * patternSize);
+			vec2 center = pt.xy - mod(pt.xy, patternSize) + (0.5f * patternSize);
+			vec4 dotColor = mix(innerCol, outerCol, smoothstep(0.5f - feather, 0.5f + feather, circleDist(pt.xy, center, radius)));
+			vec4 color = mix(dotColor, vec4(0.0f, 0.0f, 0.0f, 0.0f), 0.1f * distance(uv.xy, vec2(0.5f)));
+			color *= scissor;
+			result = color;
+		}
+	#ifdef NANOVG_GL3
+		outColor = result;
+	#else
+		gl_FragColor = result;
+	#endif
+	}
+)";
+
 } // extern "C"
 
 // vim: ft=c nu noet ts=4
